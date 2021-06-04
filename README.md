@@ -1,37 +1,113 @@
-## Welcome to GitHub Pages
+In this lab I learned how to use Postman to test server GET routes.
 
-You can use the [editor on GitHub](https://github.com/tguthrie1765/cit281-lab5/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+<br>
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Here is the code from lab 5
+```js
+const students = [
+    {
+      id: 1,
+      last: "Last1",
+      first: "First1",
+    },
+    {
+      id: 2,
+      last: "Last2",
+      first: "First2",
+    },
+    {
+      id: 3,
+      last: "Last3",
+      first: "First3",
+    }
+  ];
 
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+// Require the Fastify framework and instantiate it
+const fastify = require("fastify")();
 
-```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
+// Handle GET verb for / route using Fastify
+// Note use of "chain" dot notation syntax
 
-- Bulleted
-- List
+//student route
+fastify.get("/cit/student", (request, reply) => {
+    reply
+    .code(200)
+    .header("Content-Type", "application/json; charset=utf-8")
+    .send(students);
+});
 
-1. Numbered
-2. List
+//student id route
+fastify.get("/cit/student/:id", (request, reply) => {
+    let studentIdfromClient = request.params.id;
+    let studentToGiveToClient = null;
 
-**Bold** and _Italic_ and `Code` text
+    for (studentFromArray of students) {
+        if (studentFromArray.id == studentIdfromClient){
+            studentToGiveToClient = studentFromArray;
+            break;
+        }
+    }
 
-[Link](url) and ![Image](src)
+    if (studentToGiveToClient != null){
+        reply
+    .code(200)
+    .header("Content-Type", "application/json; charset=utf-8")
+    .send(studentToGiveToClient);
+    }
+    else{
+        reply
+    .code(404)
+    .header("Content-Type", "text/html; charset=utf-8")
+    .send("could not find student");
+    }
+    
+});
+
+//wildcard
+fastify.get("*", (request, reply) => {
+    reply
+    .code(200)
+    .header("Content-Type", "text/html; charset=utf-8")
+    .send("<h1>wildcard route</h1>");
+});
+
+fastify.post("/cit/student/add", (request, reply) => {
+
+    let dataFromClient = JSON.parse(request.body);
+
+    let maxID = 0;
+    for (indvidualStudent of students) {
+        if (maxID<indvidualStudent.id){
+            maxID=indvidualStudent.id;
+        }
+    }
+
+    generatedStudent = {
+        id: maxID +1,
+        last: dataFromClient.lname,
+        first: dataFromClient.fname
+    };
+
+students.push(generatedStudent);
+
+    reply
+    .code(200)
+    .header("Content-Type", "application/json; charset=utf-8")
+    .send(generatedStudent);
+});
+
+
+
+//Start server and listen to requests using Fastify
+const listenIP = "localhost";
+const listenPort = 8080;
+fastify.listen(listenPort, listenIP, (err, address) => {
+    if (err) {
+        console.log(err);
+        process.exit(1);
+    }
+    console.log(`Server listening on ${address}`);
+});
 ```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/tguthrie1765/cit281-lab5/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
