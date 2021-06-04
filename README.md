@@ -1,3 +1,5 @@
+![img postman](https://miro.medium.com/max/3010/1*QOx_tPV5wJnhTzAGhfIiLA.png)
+
 In this lab I learned how to use Postman to test server GET routes.
 
 <br>
